@@ -1,19 +1,22 @@
 package com.mod.template;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -21,67 +24,113 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
+	
+	/**
+	 * Contains the contents of the application. May be filtered
+	 * depending on user requirements.
+	 */
+	private ContentObject[] mContents = new ContentObject[0];
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Document xDoc = loadConfig();
+		Document xDoc = null;
+		
+		try {
+			xDoc = loadConfig();
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+			displayErrorThenExit("Could not find configuration file");
+		} catch (SAXException e) {
+			e.printStackTrace();
+			displayErrorThenExit("Configuration file is invalid");
+		} catch (IOException e) {
+			e.printStackTrace();
+			displayErrorThenExit("Configuration IO failed");
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+			displayErrorThenExit("Configuration parser error");
+		}
+		
 		if(xDoc != null) {
-			setContentView(R.layout.activity_main);
-			ContentObject co = new ContentObject(this, (Element)xDoc.getDocumentElement().getElementsByTagName("signal").item(0));
 			
+			try {
+				mContents = parseContents(xDoc);
+			} catch (ResourceNotFoundException e) {
+				e.printStackTrace();
+				displayErrorThenExit("Resource " + e.getMessage() + " not found");
+				return;
+			}
+			setContentView(R.layout.activity_main);
+			populateList();
+			/*
 			ImageButton button = (ImageButton) findViewById(R.id.listImageButton);
 			button.setEnabled(false);
-			
-		    final ListView listview = (ListView) findViewById(R.id.listView1);
-		    String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-		        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-		        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-		        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-		        "Android", "iPhone", "WindowsMobile" };
-	
-		    final ArrayList<String> list = new ArrayList<String>();
-		    for (int i = 0; i < values.length; ++i) {
-		      list.add(values[i]);
-		    }
-		    final StableArrayAdapter adapter = new StableArrayAdapter(this,
-		        android.R.layout.simple_list_item_1, list);
-		    listview.setAdapter(adapter);
-	
-		    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	
-		      @Override
-		      public void onItemClick(AdapterView<?> parent, final View view,
-		          int position, long id) {
-		        final String item = (String) parent.getItemAtPosition(position);
-		        list.remove(item);
-		        adapter.notifyDataSetChanged();
-		      }
-		    });
+			*/
 		}
+
 	}
 	
-	private Document loadConfig(){
+	private String[] getNames(ContentObject[] contents){
+		ArrayList<String> names = new ArrayList<String>();
+		
+		for(ContentObject content : contents){
+			names.add(content.getName());
+		}
+		
+		return names.toArray(new String[names.size()]);
+	}
+	
+	private void populateList(){
+		final ListView listview = (ListView) findViewById(R.id.listView1);
+		
+	    final StableArrayAdapter adapter = new StableArrayAdapter(this,
+	        android.R.layout.simple_list_item_1, getNames(mContents));
+	    
+	    listview.setAdapter(adapter);
+
+	    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+	      @Override
+	      public void onItemClick(AdapterView<?> parent, final View view,
+	          int position, long id) {
+	        final String item = (String) parent.getItemAtPosition(position);
+	        //adapter.notifyDataSetChanged();
+	      }
+	    });
+	}
+	
+	private Document loadConfig() 
+			throws NotFoundException, SAXException, IOException, ParserConfigurationException {
 		int XMLID = this.getResources().getIdentifier("config", "raw", this.getPackageName());
 		Document xDoc = null;
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		try {
-			xDoc = dbf.newDocumentBuilder().parse(getResources().openRawResource(XMLID));
-		}
-		catch (Exception e){
-	        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	        builder.setTitle("Configuration Error")
-	        .setMessage("Error loading configuration data.")
-	               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-	                   public void onClick(DialogInterface dialog, int id) {
-	                       MainActivity.this.finish();
-	                   }
-	               });
-	        builder.create();
-	        builder.show();
-	        return null;
-		}
+		xDoc = dbf.newDocumentBuilder().parse(getResources().openRawResource(XMLID));
 		return xDoc;
+	}
+	
+	private String[] getActors(ContentObject[] contents){
+		HashSet<String> actors = new HashSet<String>();
+		for(ContentObject content : contents){
+			for(String actor : content.getActors())
+				actors.add(actor);
+		}
+		return (String[]) actors.toArray(new String[actors.size()]);
+	}
+	
+	/**
+	 * 
+	 * @param xDoc Document object representing the contents of config.xml
+	 * @return Array that is populated with the contents defined in config.xml
+	 */
+	private ContentObject[] parseContents(Document xDoc) throws ResourceNotFoundException {		
+		NodeList contents = xDoc.getDocumentElement().getElementsByTagName("signal");
+		ContentObject[] parsed_contents = new ContentObject[contents.getLength()];
+		for(int i = 0; i < parsed_contents.length; i++){
+			parsed_contents[i] = new ContentObject(this, (Element)contents.item(i));
+		}
+		
+		return parsed_contents;
 	}
 	
 	public void onClickList(View v){
@@ -90,17 +139,11 @@ public class MainActivity extends Activity {
 	public void onClickFilter(View v){
 		  //mSelectedItems = new ArrayList();  // Where we track the selected items
 		    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		    // Set the dialog title
-		    String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-			        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-			        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-			        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-			        "Android", "iPhone", "WindowsMobile" };
 		    
-		    builder.setTitle("Test")
+		    builder.setTitle("Filter")
 		    // Specify the list array, the items to be selected by default (null for none),
 		    // and the listener through which to receive callbacks when items are selected
-		           .setMultiChoiceItems(values, null,
+		           .setMultiChoiceItems(getActors(mContents), null,
 		                      new DialogInterface.OnMultiChoiceClickListener() {
 		               @Override
 		               public void onClick(DialogInterface dialog, int which,
@@ -124,13 +167,11 @@ public class MainActivity extends Activity {
 		                   // or return them to the component that opened the dialog
 		               }
 		           })
-		           .setNegativeButton("NOT OK", new DialogInterface.OnClickListener() {
+		           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 		               @Override
 		               public void onClick(DialogInterface dialog, int id) {
 		               }
 		           });
-
-		    builder.create();
 		    builder.show();
 	}
 	
@@ -140,33 +181,39 @@ public class MainActivity extends Activity {
 		// Use the Builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Search")
-        .setMessage("Do I need to add this?")
+        //.setMessage("")
         .setView(input)
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       // FIRE ZE MISSILES!
                    }
                })
-           	   .setNegativeButton("NOT OK", new DialogInterface.OnClickListener() {
+           	   .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 	               @Override
 	               public void onClick(DialogInterface dialog, int id) {
 	               }
 	           });
-        
-        // Create the AlertDialog object and return it
-        builder.create();
         builder.show();
 	}
 	
 	public void onClickAbout(View v){
-    
-		// Use the Builder class for convenient dialog construction
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("About")
         .setMessage("I love pie")
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) { }
+               });
+        builder.create();
+        builder.show();
+	}
+	
+	private void displayErrorThenExit(String error){
+		// Use the Builder class for convenient dialog construction
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Fatal Error")
+        .setMessage(error)
+               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                       // FIRE ZE MISSILES!
+                	   MainActivity.this.finish();
                    }
                });
         // Create the AlertDialog object and return it
