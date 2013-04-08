@@ -2,6 +2,12 @@ package com.mod.template;
 
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -15,40 +21,67 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
-	
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-		ImageButton button = (ImageButton) findViewById(R.id.listImageButton);
-		button.setEnabled(false);
-		
-	    final ListView listview = (ListView) findViewById(R.id.listView1);
-	    String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-	        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-	        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
-	        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
-	        "Android", "iPhone", "WindowsMobile" };
-
-	    final ArrayList<String> list = new ArrayList<String>();
-	    for (int i = 0; i < values.length; ++i) {
-	      list.add(values[i]);
-	    }
-	    final StableArrayAdapter adapter = new StableArrayAdapter(this,
-	        android.R.layout.simple_list_item_1, list);
-	    listview.setAdapter(adapter);
-
-	    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-	      @Override
-	      public void onItemClick(AdapterView<?> parent, final View view,
-	          int position, long id) {
-	        final String item = (String) parent.getItemAtPosition(position);
-	        list.remove(item);
-	        adapter.notifyDataSetChanged();
-	      }
-	    });
+		Document xDoc = loadConfig();
+		if(xDoc != null) {
+			setContentView(R.layout.activity_main);
+			ContentObject co = new ContentObject(this, (Element)xDoc.getDocumentElement().getElementsByTagName("signal").item(0));
+			
+			ImageButton button = (ImageButton) findViewById(R.id.listImageButton);
+			button.setEnabled(false);
+			
+		    final ListView listview = (ListView) findViewById(R.id.listView1);
+		    String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+		        "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+		        "Linux", "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux",
+		        "OS/2", "Ubuntu", "Windows7", "Max OS X", "Linux", "OS/2",
+		        "Android", "iPhone", "WindowsMobile" };
+	
+		    final ArrayList<String> list = new ArrayList<String>();
+		    for (int i = 0; i < values.length; ++i) {
+		      list.add(values[i]);
+		    }
+		    final StableArrayAdapter adapter = new StableArrayAdapter(this,
+		        android.R.layout.simple_list_item_1, list);
+		    listview.setAdapter(adapter);
+	
+		    listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	
+		      @Override
+		      public void onItemClick(AdapterView<?> parent, final View view,
+		          int position, long id) {
+		        final String item = (String) parent.getItemAtPosition(position);
+		        list.remove(item);
+		        adapter.notifyDataSetChanged();
+		      }
+		    });
+		}
+	}
+	
+	private Document loadConfig(){
+		int XMLID = this.getResources().getIdentifier("config", "raw", this.getPackageName());
+		Document xDoc = null;
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		try {
+			xDoc = dbf.newDocumentBuilder().parse(getResources().openRawResource(XMLID));
+		}
+		catch (Exception e){
+	        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setTitle("Configuration Error")
+	        .setMessage("Error loading configuration data.")
+	               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                       MainActivity.this.finish();
+	                   }
+	               });
+	        builder.create();
+	        builder.show();
+	        return null;
+		}
+		return xDoc;
 	}
 	
 	public void onClickList(View v){
@@ -136,7 +169,6 @@ public class MainActivity extends Activity {
                        // FIRE ZE MISSILES!
                    }
                });
-        
         // Create the AlertDialog object and return it
         builder.create();
         builder.show();
