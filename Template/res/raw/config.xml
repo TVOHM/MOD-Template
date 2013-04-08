@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<signallist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Flight Deck Demo" icon_name="icon.png">
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+   <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+  <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+  </signal>
+</signallist>
