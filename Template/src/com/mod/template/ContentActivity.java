@@ -19,13 +19,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ContentActivity extends StateActivity {
+public class ContentActivity extends BaseActivity {
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content);
-		appendText("Hello World!", android.R.style.TextAppearance_Large, Gravity.CENTER);
-		appendText("This is the description", android.R.style.TextAppearance_Small, Gravity.LEFT);
+		ContentObject selected = mContents[mSelectedContent];
+		appendText(selected.getName(), android.R.style.TextAppearance_Large, Gravity.CENTER);
+		appendText(selected.getText(), android.R.style.TextAppearance_Small, Gravity.LEFT);
 		
 		appendVideo(null);
 		appendVideo(null);

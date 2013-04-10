@@ -6,6 +6,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import android.app.AlertDialog;
@@ -15,7 +17,7 @@ import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
 
-public class SplashActivity extends StateActivity {
+public class SplashActivity extends BaseActivity {
 	
 	private static final int SPLASH_MIN_DURATION = 1750;
 
@@ -50,6 +52,14 @@ public class SplashActivity extends StateActivity {
 			return;
 		}
 		
+		try {
+			mContents = parseContents(mConfig);
+		} catch (ResourceNotFoundException e) {
+			e.printStackTrace();
+			displayErrorThenExit("Resource " + e.getMessage() + " not found");
+			return;
+		}
+		
 		new Handler().postDelayed(new Runnable() {
 			  @Override
 			  public void run() {
@@ -68,4 +78,19 @@ public class SplashActivity extends StateActivity {
 		xDoc = dbf.newDocumentBuilder().parse(getResources().openRawResource(XMLID));
 		return xDoc;
 	}
+	
+	/**
+	 * 
+	 * @param xDoc Document object representing the contents of config.xml
+	 * @return Array that is populated with the contents defined in config.xml
+	 */
+	private ContentObject[] parseContents(Document xDoc) throws ResourceNotFoundException {		
+		NodeList contents = xDoc.getDocumentElement().getElementsByTagName("signal");
+		ContentObject[] parsed_contents = new ContentObject[contents.getLength()];
+		for(int i = 0; i < parsed_contents.length; i++){
+			parsed_contents[i] = new ContentObject(this, (Element)contents.item(i));
+		}
+		
+		return parsed_contents;
+	}	
 }

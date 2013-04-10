@@ -1,21 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background"
-    tools:context=".MainActivity" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
 
         <ImageButton
             android:id="@+id/listImageButton"
-            android:layout_width="65dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_listImageButton"
             android:onClick="onClickHome"
@@ -23,8 +23,8 @@
 
         <ImageButton
             android:id="@+id/filterImageButton"
-            android:layout_width="65dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_filterImageButton"
             android:onClick="onClickFilter"
@@ -32,8 +32,8 @@
 
         <ImageButton
             android:id="@+id/searchImageButton"
-            android:layout_width="65dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_searchImageButton"
             android:onClick="onClickSearch"
@@ -41,8 +41,8 @@
 
         <ImageButton
             android:id="@+id/aboutImageButton"
-            android:layout_width="65dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_aboutImageButton"
             android:onClick="onClickBack"
@@ -50,12 +50,11 @@
 
     </LinearLayout>
 
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="match_parent"
+    <VideoView
+        android:id="@+id/videoView1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearLayout1" >
-    </ListView>
+        android:layout_below="@+id/linearLayoutNavVideo"
+        android:layout_toRightOf="@+id/linearLayout1" />
 
 </RelativeLayout>

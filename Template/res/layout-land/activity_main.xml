@@ -20,7 +20,7 @@
             android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_listImageButton"
-            android:onClick="onClickList"
+            android:onClick="onClickHome"
             android:src="@drawable/icon_list" />
 
         <ImageButton
@@ -47,7 +47,7 @@
             android:layout_height="65dp"
             android:layout_weight="1"
             android:contentDescription="@string/list_aboutImageButton"
-            android:onClick="onClickAbout"
+            android:onClick="onClickBack"
             android:src="@drawable/icon_about" />
 
     </LinearLayout>

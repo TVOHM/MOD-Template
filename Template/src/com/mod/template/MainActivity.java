@@ -3,6 +3,7 @@ package com.mod.template;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,27 +24,16 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
-public class MainActivity extends StateActivity {
-	
-	/**
-	 * Contains the contents of the application. May be filtered
-	 * depending on user requirements.
-	 */
-	private ContentObject[] mContents = new ContentObject[0];
+public class MainActivity extends BaseActivity {
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		try {
-			mContents = parseContents(mConfig);
-		} catch (ResourceNotFoundException e) {
-			e.printStackTrace();
-			displayErrorThenExit("Resource " + e.getMessage() + " not found");
-			return;
-		}
 		setContentView(R.layout.activity_main);
+		printFilter();
 		populateList();
 	}
 	
@@ -60,8 +50,29 @@ public class MainActivity extends StateActivity {
 	private void populateList(){
 		final ListView listview = (ListView) findViewById(R.id.listView1);
 		
+		ArrayList<ContentObject> contents = new ArrayList<ContentObject>();
+		final List<Integer> relativeindexes = new ArrayList<Integer>();
+		
+		for(int i = 0; i < mContents.length; i++){
+			// If there are filter actors, filter by these
+			if(mActorFilter.length > 0 && mSearchFilter.length() == 0 && mContents[i].containsActor(mActorFilter)){
+				contents.add(mContents[i]);
+				relativeindexes.add(i);
+			}
+			// If there is a filter string, filter by string
+			else if(mSearchFilter.length() > 0 && mActorFilter.length == 0 && mContents[i].containsString(mSearchFilter)){
+				contents.add(mContents[i]);
+				relativeindexes.add(i);
+			}
+			// Else just add everything
+			else if (mActorFilter.length == 0 && mSearchFilter.length() == 0){
+				contents.add(mContents[i]);
+				relativeindexes.add(i);
+			}
+		}
+		
 	    final StableArrayAdapter adapter = new StableArrayAdapter(this,
-	        android.R.layout.simple_list_item_1, getNames(mContents));
+	        android.R.layout.simple_list_item_1, getNames(contents.toArray(new ContentObject[contents.size()])));
 	    
 	    listview.setAdapter(adapter);
 
@@ -70,7 +81,7 @@ public class MainActivity extends StateActivity {
 	      @Override
 	      public void onItemClick(AdapterView<?> parent, final View view,
 	          int position, long id) {
-	        final String item = (String) parent.getItemAtPosition(position);
+	    	mSelectedContent = relativeindexes.get(position);
 		    Intent intent = new Intent(MainActivity.this, ContentActivity.class);
 		    MainActivity.this.startActivity(intent);
 		    MainActivity.this.finish();
@@ -78,110 +89,35 @@ public class MainActivity extends StateActivity {
 	    });
 	}
 	
-	private String[] getActors(ContentObject[] contents){
-		HashSet<String> actors = new HashSet<String>();
-		for(ContentObject content : contents){
-			for(String actor : content.getActors())
-				actors.add(actor);
+	private void printFilter(){
+		if(mSearchFilter.length() > 0 && mActorFilter.length == 0)
+			Toast.makeText(this, "Showing search results for \"" + mSearchFilter + "\"", Toast.LENGTH_SHORT).show();
+		else if (mActorFilter.length > 0 && mSearchFilter.length() == 0){
+			String actors = "";
+			for(String actor : mActorFilter)
+				actors += actor + ", ";
+			actors = actors.substring(0, actors.length() - 2);
+			Toast.makeText(this, "Showing results performed by " + actors, Toast.LENGTH_SHORT).show();
 		}
-		return (String[]) actors.toArray(new String[actors.size()]);
 	}
 	
-	/**
-	 * 
-	 * @param xDoc Document object representing the contents of config.xml
-	 * @return Array that is populated with the contents defined in config.xml
-	 */
-	private ContentObject[] parseContents(Document xDoc) throws ResourceNotFoundException {		
-		NodeList contents = xDoc.getDocumentElement().getElementsByTagName("signal");
-		ContentObject[] parsed_contents = new ContentObject[contents.getLength()];
-		for(int i = 0; i < parsed_contents.length; i++){
-			parsed_contents[i] = new ContentObject(this, (Element)contents.item(i));
-		}
-		
-		return parsed_contents;
-	}
-	
-	public void onClickList(View v){
-	}
-	
-	public void onClickFilter(View v){
-		  //mSelectedItems = new ArrayList();  // Where we track the selected items
-		    final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		    
-		    builder.setTitle("Filter")
-		    // Specify the list array, the items to be selected by default (null for none),
-		    // and the listener through which to receive callbacks when items are selected
-		           .setMultiChoiceItems(getActors(mContents), null,
-		                      new DialogInterface.OnMultiChoiceClickListener() {
-		               @Override
-		               public void onClick(DialogInterface dialog, int which,
-		                       boolean isChecked) {
-		            	   /*
-		                   if (isChecked) {
-		                       // If the user checked the item, add it to the selected items
-		                       mSelectedItems.add(which);
-		                   } else if (mSelectedItems.contains(which)) {
-		                       // Else, if the item is already in the array, remove it 
-		                       mSelectedItems.remove(Integer.valueOf(which));
-		                   }
-		                   */
-		               }
-		           })
-		    // Set the action buttons
-		           .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-		               @Override
-		               public void onClick(DialogInterface dialog, int id) {
-		                   // User clicked OK, so save the mSelectedItems results somewhere
-		                   // or return them to the component that opened the dialog
-		               }
-		           })
-		           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-		               @Override
-		               public void onClick(DialogInterface dialog, int id) {
-		               }
-		           });
-		    builder.show();
-	}
-	
-	public boolean onClickSearch(View v){
-		final EditText input = new EditText(this);
-	    
-		// Use the Builder class for convenient dialog construction
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Search")
-        //.setMessage("")
-        .setView(input)
-               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                	   MainActivity.this.mSearchFilter = input.getText().toString();
-                   }
-               })
-           	   .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-	               @Override
-	               public void onClick(DialogInterface dialog, int id) {
-	               }
-	           });
-        builder.show();
-        
-        return true;
-	}
-	
-	public void onClickAbout(View v){
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("About")
-        .setMessage("TODO: Write About")
-               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) { }
-               });
-        builder.create();
-        builder.show();
-	}
-
 	@Override
-	public boolean onSearchRequested() {
-		return onClickSearch(null);
+	public void onBackPressed(){
+	       final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	        builder.setTitle("Exit")
+	        .setMessage("Are you sure you want to quit?")
+	               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                	   shutdown();
+	                	   MainActivity.this.finish();
+	                   }
+	               })
+	               .setNegativeButton("No", new DialogInterface.OnClickListener() {
+	                   public void onClick(DialogInterface dialog, int id) {
+	                   }
+	               });
+	        // Create the AlertDialog object and return it
+	        builder.create();
+	        builder.show();
 	}
-	
-	
 }

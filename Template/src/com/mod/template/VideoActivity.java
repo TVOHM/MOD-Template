@@ -1,6 +1,8 @@
 package com.mod.template;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,7 +13,7 @@ import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-public class VideoActivity extends StateActivity {
+public class VideoActivity extends BaseActivity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,12 @@ public class VideoActivity extends StateActivity {
 		video.setVideoURI(file);
 		MediaController mediaController = new MediaController(this);
 		video.setMediaController(mediaController);
+		video.setOnPreparedListener(new OnPreparedListener() {
+		    @Override
+		    public void onPrepared(MediaPlayer mp) {
+		        mp.setLooping(true);
+		    }
+		});
 		video.start();
 	}
 	
