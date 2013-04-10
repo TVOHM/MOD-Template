@@ -12,4 +12,6 @@
 	<string name="list_filterImageButton">Filter Image Icon</string>
 	<string name="list_searchImageButton">Search Image Icon</string>
 	<string name="list_aboutImageButton">About Image Icon</string>
+	<string name="content_backButton">Back</string>
+	<string name="VideoBackButton">Back</string>
 </resources>

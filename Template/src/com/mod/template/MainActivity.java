@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.view.View;
@@ -23,7 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends StateActivity {
 	
 	/**
 	 * Contains the contents of the application. May be filtered
@@ -34,41 +35,16 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Document xDoc = null;
 		
 		try {
-			xDoc = loadConfig();
-		} catch (NotFoundException e) {
+			mContents = parseContents(mConfig);
+		} catch (ResourceNotFoundException e) {
 			e.printStackTrace();
-			displayErrorThenExit("Could not find configuration file");
-		} catch (SAXException e) {
-			e.printStackTrace();
-			displayErrorThenExit("Configuration file is invalid");
-		} catch (IOException e) {
-			e.printStackTrace();
-			displayErrorThenExit("Configuration IO failed");
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			displayErrorThenExit("Configuration parser error");
+			displayErrorThenExit("Resource " + e.getMessage() + " not found");
+			return;
 		}
-		
-		if(xDoc != null) {
-			
-			try {
-				mContents = parseContents(xDoc);
-			} catch (ResourceNotFoundException e) {
-				e.printStackTrace();
-				displayErrorThenExit("Resource " + e.getMessage() + " not found");
-				return;
-			}
-			setContentView(R.layout.activity_main);
-			populateList();
-			/*
-			ImageButton button = (ImageButton) findViewById(R.id.listImageButton);
-			button.setEnabled(false);
-			*/
-		}
-
+		setContentView(R.layout.activity_main);
+		populateList();
 	}
 	
 	private String[] getNames(ContentObject[] contents){
@@ -95,18 +71,11 @@ public class MainActivity extends Activity {
 	      public void onItemClick(AdapterView<?> parent, final View view,
 	          int position, long id) {
 	        final String item = (String) parent.getItemAtPosition(position);
-	        //adapter.notifyDataSetChanged();
+		    Intent intent = new Intent(MainActivity.this, ContentActivity.class);
+		    MainActivity.this.startActivity(intent);
+		    MainActivity.this.finish();
 	      }
 	    });
-	}
-	
-	private Document loadConfig() 
-			throws NotFoundException, SAXException, IOException, ParserConfigurationException {
-		int XMLID = this.getResources().getIdentifier("config", "raw", this.getPackageName());
-		Document xDoc = null;
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		xDoc = dbf.newDocumentBuilder().parse(getResources().openRawResource(XMLID));
-		return xDoc;
 	}
 	
 	private String[] getActors(ContentObject[] contents){
@@ -175,7 +144,7 @@ public class MainActivity extends Activity {
 		    builder.show();
 	}
 	
-	public void onClickSearch(View v){
+	public boolean onClickSearch(View v){
 		final EditText input = new EditText(this);
 	    
 		// Use the Builder class for convenient dialog construction
@@ -185,6 +154,7 @@ public class MainActivity extends Activity {
         .setView(input)
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
+                	   MainActivity.this.mSearchFilter = input.getText().toString();
                    }
                })
            	   .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -193,31 +163,25 @@ public class MainActivity extends Activity {
 	               }
 	           });
         builder.show();
+        
+        return true;
 	}
 	
 	public void onClickAbout(View v){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("About")
-        .setMessage("I love pie")
+        .setMessage("TODO: Write About")
                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) { }
                });
         builder.create();
         builder.show();
 	}
-	
-	private void displayErrorThenExit(String error){
-		// Use the Builder class for convenient dialog construction
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Fatal Error")
-        .setMessage(error)
-               .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                	   MainActivity.this.finish();
-                   }
-               });
-        // Create the AlertDialog object and return it
-        builder.create();
-        builder.show();
+
+	@Override
+	public boolean onSearchRequested() {
+		return onClickSearch(null);
 	}
+	
+	
 }

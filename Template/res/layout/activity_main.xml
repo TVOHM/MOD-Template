@@ -45,7 +45,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:contentDescription="@string/list_aboutImageButton"
-            android:onClick="onClickAbout"
+            android:onClick="onClickBack"
             android:src="@drawable/icon_about" />
 
     </LinearLayout>
