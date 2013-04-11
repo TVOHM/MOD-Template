@@ -42,8 +42,10 @@ public class VideoObject {
 	
 	private boolean parseVideoFile(Context context, Element element){
 		mFileName = element.getAttribute("file_name");
+		if(mFileName.contains("."))
+			mFileName = mFileName.substring(0, mFileName.lastIndexOf('.'));
 		if(mFileName.length() > 0 && 
-				context.getResources().getIdentifier(mFileName.substring(0, mFileName.lastIndexOf('.')), "raw", context.getPackageName()) == 0) {
+				context.getResources().getIdentifier(mFileName, "raw", context.getPackageName()) == 0) {
 			return false;
 		}
 		else {
@@ -53,8 +55,10 @@ public class VideoObject {
 	
 	private boolean parseIconFile(Context context, Element element){
 		mIconName = element.getAttribute("icon_name");
+		if(mIconName.contains("."))
+			mIconName = mIconName.substring(0, mIconName.lastIndexOf('.'));
 		if(mIconName.length() > 0 && 
-				context.getResources().getIdentifier(mIconName.substring(0, mIconName.lastIndexOf('.')), "raw", context.getPackageName()) == 0) {
+				context.getResources().getIdentifier(mIconName, "raw", context.getPackageName()) == 0) {
 			return false;
 		}
 		else {

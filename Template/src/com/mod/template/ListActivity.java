@@ -26,14 +26,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class MainActivity extends BaseActivity {
+public class ListActivity extends BaseActivity {
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
-		printFilter();
 		populateList();
 	}
 	
@@ -82,13 +81,14 @@ public class MainActivity extends BaseActivity {
 	      public void onItemClick(AdapterView<?> parent, final View view,
 	          int position, long id) {
 	    	mSelectedContent = relativeindexes.get(position);
-		    Intent intent = new Intent(MainActivity.this, ContentActivity.class);
-		    MainActivity.this.startActivity(intent);
-		    MainActivity.this.finish();
+		    Intent intent = new Intent(ListActivity.this, ContentActivity.class);
+		    ListActivity.this.startActivity(intent);
+		    ListActivity.this.finish();
 	      }
 	    });
 	}
 	
+	/*
 	private void printFilter(){
 		if(mSearchFilter.length() > 0 && mActorFilter.length == 0)
 			Toast.makeText(this, "Showing search results for \"" + mSearchFilter + "\"", Toast.LENGTH_SHORT).show();
@@ -100,6 +100,7 @@ public class MainActivity extends BaseActivity {
 			Toast.makeText(this, "Showing results performed by " + actors, Toast.LENGTH_SHORT).show();
 		}
 	}
+	*/
 	
 	@Override
 	public void onBackPressed(){
@@ -109,7 +110,7 @@ public class MainActivity extends BaseActivity {
 	               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 	                   public void onClick(DialogInterface dialog, int id) {
 	                	   shutdown();
-	                	   MainActivity.this.finish();
+	                	   ListActivity.this.finish();
 	                   }
 	               })
 	               .setNegativeButton("No", new DialogInterface.OnClickListener() {

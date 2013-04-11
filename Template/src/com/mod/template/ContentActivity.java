@@ -27,18 +27,17 @@ public class ContentActivity extends BaseActivity {
 		setContentView(R.layout.activity_content);
 		ContentObject selected = mContents[mSelectedContent];
 		appendText(selected.getName(), android.R.style.TextAppearance_Large, Gravity.CENTER);
-		appendText(selected.getText(), android.R.style.TextAppearance_Small, Gravity.LEFT);
+		appendPadding(5);
+		appendText(toCSVList(selected.getActors()), android.R.style.TextAppearance_Medium, Gravity.CENTER);
+		appendPadding(15);
+		appendText(selected.getText(), android.R.style.TextAppearance_Small, Gravity.CENTER);
 		
-		appendVideo(null);
-		appendVideo(null);
-		appendVideo(null);
-		appendVideo(null);
-		appendVideo(null);
-		appendVideo(null);
+		for(VideoObject video : selected.getVideos())
+			appendVideo(video);
 	}
 	
 	public void onClickBack(View v){
-	    Intent intent = new Intent(ContentActivity.this, MainActivity.class);
+	    Intent intent = new Intent(ContentActivity.this, ListActivity.class);
 	    ContentActivity.this.startActivity(intent);
 	    ContentActivity.this.finish();
 	}
@@ -50,10 +49,10 @@ public class ContentActivity extends BaseActivity {
 		onClickBack(null);
 	}
 	
-	private void appendVideo(Element video){
+	private void appendVideo(VideoObject video){
 		appendPadding(15);
-		appendText("Meow Woof", android.R.style.TextAppearance_Medium, Gravity.CENTER);
-		appendImage("night02i", "MyVideo");
+		appendText(video.getName(), android.R.style.TextAppearance_Medium, Gravity.CENTER);
+		appendImage(video.getIconName(), video.getFileName());
 	}
 	
 	private void appendPadding(int amount){
@@ -74,17 +73,29 @@ public class ContentActivity extends BaseActivity {
 		layout.addView(t);
 	}
 	
+	/**
+	 * Appends an image view to the bottom of the LinearList linearLayoutScroll in the video_activity view.
+	 * When this image view is clicked the static variable mSelectedVideo is set to the Video parameter
+	 * and the activity_video activity is launched.
+	 * @param Image The string of the image resource for the icon
+	 * @param Video The string of the video resource for this video
+	 */
 	private void appendImage(String Image, final String Video){
+		// Get the required layout
 		final LinearLayout layout = (LinearLayout) findViewById(R.id.linearLayoutScroll);
+		
+		// Create the image view
 		ImageView image = new ImageView(this);
 		int x = getResources().getIdentifier(Image, "raw", this.getPackageName());
 		image.setImageResource(x);
 		image.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 		
+		// Apply the listener
 		image.setOnClickListener(new OnClickListener() {
 
 		    @Override
 		    public void onClick(View v) {
+		    	mSelectedVideo = Video;
 			    Intent intent = new Intent(ContentActivity.this, VideoActivity.class);
 			    ContentActivity.this.startActivity(intent);
 			    ContentActivity.this.finish();

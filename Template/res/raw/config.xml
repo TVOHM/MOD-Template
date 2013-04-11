@@ -5,5 +5,11 @@
   </signal>
   <signal name="2 - Wave-Off" text="Wave-Off&#xD;&#xA;(Mandatory Signal)" actors="FDO Marshaller">
     <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
+    <video name="Wave-Off - Night" file_name="night02.mp4" icon_name="night02i.jpg" />
   </signal>
 </signallist>

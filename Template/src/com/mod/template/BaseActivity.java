@@ -21,11 +21,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity {
-	protected static final int NO_SELECTION = -1;
 	protected static String mSearchFilter = "";
 	protected static String[] mActorFilter = new String[0];
-	protected static int mSelectedContent = NO_SELECTION;
-	protected static int mSelectedVideo = NO_SELECTION;
+	protected static int mSelectedContent = -1;
+	protected static String mSelectedVideo = "";
 	protected static Document mConfig = null;
 	
 	/**
@@ -38,8 +37,8 @@ public class BaseActivity extends Activity {
 		mContents = new ContentObject[0];
 		mSearchFilter = "";
 		mActorFilter = new String[0];
-		mSelectedContent = NO_SELECTION;
-		mSelectedVideo = NO_SELECTION;
+		mSelectedContent = -1;
+		mSelectedVideo = "";
 	}
 	
 	protected void displayErrorThenExit(String error){
@@ -55,6 +54,17 @@ public class BaseActivity extends Activity {
         // Create the AlertDialog object and return it
         builder.create();
         builder.show();
+	}
+	
+	protected String toCSVList(String[] array){
+		String ret = "";
+		if(array.length > 0){
+			for(String string : array){
+				ret += string + ", ";
+			}
+			ret = ret.substring(0, ret.length() - 2);
+		}
+		return ret;
 	}
 	
 	private String[] getActors(ContentObject[] contents){
@@ -96,7 +106,7 @@ public class BaseActivity extends Activity {
 	            			   actorfilter.add(actors[i]);
 	            	   }
 	            	   mActorFilter = actorfilter.toArray(new String[actorfilter.size()]);
-	            	   BaseActivity.this.launchIntent(MainActivity.class);
+	            	   BaseActivity.this.launchIntent(ListActivity.class);
 	               }
 	           })
 	           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -119,7 +129,7 @@ public class BaseActivity extends Activity {
                    public void onClick(DialogInterface dialog, int id) {
                 	   BaseActivity.this.mSearchFilter = input.getText().toString();
                 	   BaseActivity.this.mActorFilter = new String[0];
-                	   BaseActivity.this.launchIntent(MainActivity.class);
+                	   BaseActivity.this.launchIntent(ListActivity.class);
                    }
                })
            	   .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -144,7 +154,7 @@ public class BaseActivity extends Activity {
 	public void onClickHome(View v){
 		BaseActivity.this.mSearchFilter = "";
 		BaseActivity.this.mActorFilter = new String[0];
-		BaseActivity.this.launchIntent(MainActivity.class);
+		BaseActivity.this.launchIntent(ListActivity.class);
 	}
 	
 	protected void launchIntent(Class <?> cls){

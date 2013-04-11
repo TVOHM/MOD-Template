@@ -19,7 +19,7 @@ import android.os.Handler;
 
 public class SplashActivity extends BaseActivity {
 	
-	private static final int SPLASH_MIN_DURATION = 1750;
+	private static final int SPLASH_MIN_DURATION = 2250;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class SplashActivity extends BaseActivity {
 		new Handler().postDelayed(new Runnable() {
 			  @Override
 			  public void run() {
-			    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+			    Intent intent = new Intent(SplashActivity.this, ListActivity.class);
 			    SplashActivity.this.startActivity(intent);
 			    SplashActivity.this.finish();
 			  }

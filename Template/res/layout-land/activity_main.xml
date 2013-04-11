@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".MainActivity" >
+    tools:context=".ListActivity" >
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
+        android:id="@+id/linearLayoutNavMain"
         android:layout_width="65dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:contentDescription="@string/list_listImageButton"
             android:onClick="onClickHome"
-            android:src="@drawable/icon_list" />
+            android:src="@drawable/icon_home" />
 
         <ImageButton
             android:id="@+id/filterImageButton"
@@ -48,7 +48,7 @@
             android:layout_weight="1"
             android:contentDescription="@string/list_aboutImageButton"
             android:onClick="onClickBack"
-            android:src="@drawable/icon_about" />
+            android:src="@drawable/icon_back" />
 
     </LinearLayout>
 
@@ -57,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/linearLayout1" >
+        android:layout_toLeftOf="@+id/linearLayoutNavMain" >
     </ListView>
 
 </RelativeLayout>

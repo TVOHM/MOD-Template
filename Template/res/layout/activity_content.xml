@@ -4,20 +4,20 @@
     android:layout_height="match_parent" >
     
     <LinearLayout
-        android:id="@+id/linearLayoutNavContent"
+        android:id="@+id/contentActivityNavigationListView"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_alignParentBottom="true" >
 
         <ImageButton
-            android:id="@+id/listImageButton"
+            android:id="@+id/contentActivityHomeButton"
             android:layout_width="65dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="@string/list_listImageButton"
+            android:contentDescription="Home"
             android:onClick="onClickHome"
-            android:src="@drawable/icon_list" />
+            android:src="@drawable/icon_home" />
 
         <ImageButton
             android:id="@+id/filterImageButton"
@@ -44,23 +44,30 @@
             android:layout_weight="1"
             android:contentDescription="@string/list_aboutImageButton"
             android:onClick="onClickBack"
-            android:src="@drawable/icon_about" />
+            android:src="@drawable/icon_back" />
 
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/contentActivityHeaderListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
     </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/linearLayoutNavContent" >
+        android:layout_above="@+id/linearLayoutNavContent" >
 
         <LinearLayout
             android:id="@+id/linearLayoutScroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical" >
         </LinearLayout>
     </ScrollView>
